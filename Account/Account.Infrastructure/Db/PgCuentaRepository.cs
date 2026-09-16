@@ -16,21 +16,18 @@ public class PgCuentaRepository : ICuentaRepository
 
     public async Task<Guid?> CreateCuenta(Cuenta cuenta)
     {
-        var transaction = await this.dbContext.Database.BeginTransactionAsync();
         try
         {
             Log.Information("Creating cuenta with NumeroCuenta: {NumeroCuenta}", cuenta.NumeroCuenta);
 
             var entry = await this.dbContext.Cuentas.AddAsync(cuenta);
             await this.dbContext.SaveChangesAsync();
-            await transaction.CommitAsync();
 
             Log.Information("Cuenta created with Id: {Id}", entry.Entity.Id);
             return entry.Entity.Id;
         }
         catch (Exception e)
         {
-            await transaction.RollbackAsync();
             Log.Error(e, "Error creating cuenta with NumeroCuenta: {NumeroCuenta}", cuenta.NumeroCuenta);
             return null;
         }
@@ -63,19 +60,16 @@ public class PgCuentaRepository : ICuentaRepository
 
     public async Task<bool> UpdateCuenta(Cuenta cuenta)
     {
-        var transaction = await this.dbContext.Database.BeginTransactionAsync();
         try
         {
             this.dbContext.Cuentas.Update(cuenta);
             await this.dbContext.SaveChangesAsync();
-            await transaction.CommitAsync();
 
             Log.Information("Cuenta with Id {Id} updated successfully", cuenta.Id);
             return true;
         }
         catch (Exception e)
         {
-            await transaction.RollbackAsync();
             Log.Error(e, "Error updating cuenta with Id {Id}", cuenta.Id);
             return false;
         }
@@ -95,19 +89,16 @@ public class PgCuentaRepository : ICuentaRepository
         // violations for the exception middleware to map, not infrastructure failures.
         var movimiento = cuenta.RegistrarMovimiento(tipoMovimiento, valor);
 
-        var transaction = await this.dbContext.Database.BeginTransactionAsync();
         try
         {
             await this.dbContext.Movimientos.AddAsync(movimiento);
             await this.dbContext.SaveChangesAsync();
-            await transaction.CommitAsync();
 
             Log.Information("Movimiento {MovimientoId} registered for Cuenta {CuentaId}", movimiento.Id, cuentaId);
             return movimiento;
         }
         catch (Exception e)
         {
-            await transaction.RollbackAsync();
             Log.Error(e, "Error persisting movimiento for Cuenta {CuentaId}", cuentaId);
             return null;
         }
