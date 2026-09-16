@@ -1,4 +1,5 @@
 using Client.Api.Middleware;
+using Client.Domain.Repository;
 using Client.Infrastructure.Db;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
@@ -21,6 +22,8 @@ builder.Services.AddOpenApi();
 
 builder.Services.AddDbContext<ClientDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("ClientDb")));
+
+builder.Services.AddScoped<IClienteRepository, PgClienteRepository>();
 
 const string corsPolicy = "ClientCorsPolicy";
 var allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>() ?? [];
