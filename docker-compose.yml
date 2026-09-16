@@ -1,0 +1,3 @@
+include:
+  - Account/docker-compose.yml
+  - Client/docker-compose.yml
