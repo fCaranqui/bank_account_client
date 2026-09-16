@@ -38,9 +38,9 @@ public class Cliente : Persona
         Estado = true;
     }
 
-    public void Desactivar() => Estado = false;
+    public void Deactivate() => Estado = false;
 
-    public void Activar() => Estado = true;
+    public void Activate() => Estado = true;
 
-    public void Eliminar() => this.DeletedAt = DateTime.UtcNow;
+    public void Delete() => this.DeletedAt = DateTime.UtcNow;
 }
