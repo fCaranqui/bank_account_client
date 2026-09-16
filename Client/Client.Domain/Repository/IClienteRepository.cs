@@ -2,19 +2,19 @@ namespace Client.Domain.Repository;
 
 public interface IClienteRepository
 {
-    Task<Guid?> CreateCliente(Cliente cliente);
+    Task<Guid?> CreateClient(Cliente cliente);
 
-    Task<Cliente?> GetClienteById(Guid id);
+    Task<Cliente?> GetClientById(Guid id);
 
-    Task<Cliente?> GetClienteByClienteId(string clienteId);
+    Task<Cliente?> GetClientByClientId(string clienteId);
 
-    Task<bool> ExisteClienteConIdentificacion(string identificacion);
+    Task<bool> ExistsClientWithIdentification(string identificacion);
 
-    Task<bool> ExisteClienteConClienteId(string clienteId);
+    Task<bool> ExistsClientWithClientId(string clienteId);
 
-    Task<List<Cliente>> GetAllClientes();
+    Task<List<Cliente>> GetAllClients();
 
-    Task<bool> UpdateCliente(Cliente cliente);
+    Task<bool> UpdateClient(Cliente cliente);
 
-    Task<bool> DeleteCliente(Guid id);
+    Task<bool> DeleteClient(Guid id);
 }

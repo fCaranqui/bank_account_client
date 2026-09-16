@@ -14,7 +14,7 @@ public class PgClienteRepository : IClienteRepository
         this.dbContext = dbContext;
     }
 
-    public async Task<Guid?> CreateCliente(Cliente cliente)
+    public async Task<Guid?> CreateClient(Cliente cliente)
     {
         try
         {
@@ -33,32 +33,32 @@ public class PgClienteRepository : IClienteRepository
         }
     }
 
-    public async Task<Cliente?> GetClienteById(Guid id)
+    public async Task<Cliente?> GetClientById(Guid id)
     {
         return await this.dbContext.Clientes.FirstOrDefaultAsync(c => c.Id == id && c.DeletedAt == null);
     }
 
-    public async Task<Cliente?> GetClienteByClienteId(string clienteId)
+    public async Task<Cliente?> GetClientByClientId(string clienteId)
     {
         return await this.dbContext.Clientes.FirstOrDefaultAsync(c => c.ClienteId == clienteId && c.DeletedAt == null);
     }
 
-    public async Task<bool> ExisteClienteConIdentificacion(string identificacion)
+    public async Task<bool> ExistsClientWithIdentification(string identificacion)
     {
         return await this.dbContext.Clientes.AnyAsync(c => c.Identificacion == identificacion && c.DeletedAt == null);
     }
 
-    public async Task<bool> ExisteClienteConClienteId(string clienteId)
+    public async Task<bool> ExistsClientWithClientId(string clienteId)
     {
         return await this.dbContext.Clientes.AnyAsync(c => c.ClienteId == clienteId && c.DeletedAt == null);
     }
 
-    public async Task<List<Cliente>> GetAllClientes()
+    public async Task<List<Cliente>> GetAllClients()
     {
         return await this.dbContext.Clientes.Where(c => c.DeletedAt == null).ToListAsync();
     }
 
-    public async Task<bool> UpdateCliente(Cliente cliente)
+    public async Task<bool> UpdateClient(Cliente cliente)
     {
         try
         {
@@ -75,7 +75,7 @@ public class PgClienteRepository : IClienteRepository
         }
     }
 
-    public async Task<bool> DeleteCliente(Guid id)
+    public async Task<bool> DeleteClient(Guid id)
     {
         var cliente = await this.dbContext.Clientes.FirstOrDefaultAsync(c => c.Id == id);
         if (cliente == null)
@@ -84,7 +84,7 @@ public class PgClienteRepository : IClienteRepository
             return false;
         }
 
-        cliente.Eliminar();
-        return await this.UpdateCliente(cliente);
+        cliente.Delete();
+        return await this.UpdateClient(cliente);
     }
 }
