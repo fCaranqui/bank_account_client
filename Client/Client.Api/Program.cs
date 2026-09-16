@@ -1,3 +1,5 @@
+using Client.Infrastructure.Db;
+using Microsoft.EntityFrameworkCore;
 using Serilog;
 
 Log.Logger = new LoggerConfiguration()
@@ -15,6 +17,9 @@ builder.Host.UseSerilog();
 builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
+
+builder.Services.AddDbContext<ClientDbContext>(options =>
+    options.UseNpgsql(builder.Configuration.GetConnectionString("ClientDb")));
 
 var app = builder.Build();
 
