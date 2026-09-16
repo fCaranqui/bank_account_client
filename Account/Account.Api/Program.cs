@@ -1,4 +1,5 @@
 using Account.Api.Middleware;
+using Account.Domain.Repository;
 using Account.Infrastructure.Db;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
@@ -21,6 +22,8 @@ builder.Services.AddOpenApi();
 
 builder.Services.AddDbContext<AccountDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("AccountDb")));
+
+builder.Services.AddScoped<ICuentaRepository, PgCuentaRepository>();
 
 const string corsPolicy = "AccountCorsPolicy";
 var allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>() ?? [];
