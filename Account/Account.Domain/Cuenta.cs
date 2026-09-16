@@ -20,6 +20,12 @@ public class Cuenta
 
     public string ClienteId { get; private set; } = null!;
 
+    public DateTime CreatedAt { get; private set; }
+
+    public DateTime? UpdatedAt { get; private set; }
+
+    public DateTime? DeletedAt { get; private set; }
+
     public IReadOnlyCollection<Movimiento> Movimientos => this.movimientos.AsReadOnly();
 
     protected Cuenta()

@@ -14,6 +14,12 @@ public class Movimiento
 
     public decimal Saldo { get; private set; }
 
+    public DateTime CreatedAt { get; private set; }
+
+    public DateTime? UpdatedAt { get; private set; }
+
+    public DateTime? DeletedAt { get; private set; }
+
     protected Movimiento()
     {
     }
