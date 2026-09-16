@@ -22,11 +22,23 @@ builder.Services.AddOpenApi();
 builder.Services.AddDbContext<AccountDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("AccountDb")));
 
+const string corsPolicy = "AccountCorsPolicy";
+var allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>() ?? [];
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(corsPolicy, policy =>
+        policy.WithOrigins(allowedOrigins)
+            .AllowAnyMethod()
+            .AllowAnyHeader());
+});
+
 var app = builder.Build();
 
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 app.UseSerilogRequestLogging();
+
+app.UseCors(corsPolicy);
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
