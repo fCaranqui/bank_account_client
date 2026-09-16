@@ -38,27 +38,27 @@ public class PgCuentaRepository : ICuentaRepository
 
     public async Task<Cuenta?> GetCuentaById(Guid id)
     {
-        return await this.dbContext.Cuentas.FirstOrDefaultAsync(c => c.Id == id);
+        return await this.dbContext.Cuentas.FirstOrDefaultAsync(c => c.Id == id && c.DeletedAt == null);
     }
 
     public async Task<Cuenta?> GetCuentaByNumeroCuenta(string numeroCuenta)
     {
-        return await this.dbContext.Cuentas.FirstOrDefaultAsync(c => c.NumeroCuenta == numeroCuenta);
+        return await this.dbContext.Cuentas.FirstOrDefaultAsync(c => c.NumeroCuenta == numeroCuenta && c.DeletedAt == null);
     }
 
     public async Task<bool> ExisteCuentaConNumeroCuenta(string numeroCuenta)
     {
-        return await this.dbContext.Cuentas.AnyAsync(c => c.NumeroCuenta == numeroCuenta);
+        return await this.dbContext.Cuentas.AnyAsync(c => c.NumeroCuenta == numeroCuenta && c.DeletedAt == null);
     }
 
     public async Task<List<Cuenta>> GetCuentasByClienteId(string clienteId)
     {
-        return await this.dbContext.Cuentas.Where(c => c.ClienteId == clienteId).ToListAsync();
+        return await this.dbContext.Cuentas.Where(c => c.ClienteId == clienteId && c.DeletedAt == null).ToListAsync();
     }
 
     public async Task<List<Cuenta>> GetAllCuentas()
     {
-        return await this.dbContext.Cuentas.ToListAsync();
+        return await this.dbContext.Cuentas.Where(c => c.DeletedAt == null).ToListAsync();
     }
 
     public async Task<bool> UpdateCuenta(Cuenta cuenta)
@@ -115,7 +115,7 @@ public class PgCuentaRepository : ICuentaRepository
 
     public async Task<Movimiento?> GetMovimientoById(Guid movimientoId)
     {
-        return await this.dbContext.Movimientos.FirstOrDefaultAsync(m => m.Id == movimientoId);
+        return await this.dbContext.Movimientos.FirstOrDefaultAsync(m => m.Id == movimientoId && m.DeletedAt == null);
     }
 
     public async Task<List<Movimiento>> GetMovimientosByCuentaId(
@@ -125,7 +125,7 @@ public class PgCuentaRepository : ICuentaRepository
         int? skip = null,
         int? take = null)
     {
-        var query = this.dbContext.Movimientos.Where(m => m.CuentaId == cuentaId);
+        var query = this.dbContext.Movimientos.Where(m => m.CuentaId == cuentaId && m.DeletedAt == null);
 
         if (desde.HasValue)
         {

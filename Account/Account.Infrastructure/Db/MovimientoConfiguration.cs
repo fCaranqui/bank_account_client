@@ -26,6 +26,14 @@ public class MovimientoConfiguration : IEntityTypeConfiguration<Movimiento>
 
         builder.Property(m => m.Saldo).HasPrecision(18, 2);
 
+        builder.Property(m => m.CreatedAt)
+            .HasDefaultValueSql("NOW()")
+            .IsRequired();
+
+        builder.Property(m => m.UpdatedAt);
+
+        builder.Property(m => m.DeletedAt);
+
         builder
             .HasOne<Cuenta>()
             .WithMany(c => c.Movimientos)

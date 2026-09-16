@@ -32,6 +32,14 @@ public class CuentaConfiguration : IEntityTypeConfiguration<Cuenta>
             .HasMaxLength(50)
             .IsRequired();
 
+        builder.Property(c => c.CreatedAt)
+            .HasDefaultValueSql("NOW()")
+            .IsRequired();
+
+        builder.Property(c => c.UpdatedAt);
+
+        builder.Property(c => c.DeletedAt);
+
         builder.Navigation(c => c.Movimientos)
             .UsePropertyAccessMode(PropertyAccessMode.Field);
     }
