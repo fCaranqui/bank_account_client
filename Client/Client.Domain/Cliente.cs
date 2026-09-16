@@ -41,4 +41,6 @@ public class Cliente : Persona
     public void Desactivar() => Estado = false;
 
     public void Activar() => Estado = true;
+
+    public void Eliminar() => this.DeletedAt = DateTime.UtcNow;
 }

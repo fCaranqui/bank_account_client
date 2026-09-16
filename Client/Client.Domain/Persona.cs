@@ -16,6 +16,12 @@ public class Persona
 
     public string Telefono { get; private set; } = null!;
 
+    public DateTime CreatedAt { get; private set; }
+
+    public DateTime? UpdatedAt { get; private set; }
+
+    public DateTime? DeletedAt { get; protected set; }
+
     protected Persona()
     {
     }
