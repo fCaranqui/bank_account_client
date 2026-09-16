@@ -58,7 +58,7 @@ public class Cuenta
         ClienteId = clienteId;
     }
 
-    public Movimiento RegistrarMovimiento(TipoMovimiento tipoMovimiento, decimal valor)
+    public Movimiento RegisterMovement(TipoMovimiento tipoMovimiento, decimal valor)
     {
         if (!this.Estado)
         {
@@ -85,7 +85,7 @@ public class Cuenta
         return movimiento;
     }
 
-    public void Desactivar() => this.Estado = false;
+    public void Deactivate() => this.Estado = false;
 
-    public void Activar() => this.Estado = true;
+    public void Activate() => this.Estado = true;
 }
