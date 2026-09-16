@@ -1,0 +1,25 @@
+services:
+  client-db:
+    image: postgres:16-alpine
+    container_name: client-db
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    ports:
+      - "${CLIENT_DB_HOST_PORT}:5432"
+    volumes:
+      - client-db-data:/var/lib/postgresql/data
+    networks:
+      - client-net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+networks:
+  client-net:
+
+volumes:
+  client-db-data:
