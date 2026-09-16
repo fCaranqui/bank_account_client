@@ -16,21 +16,18 @@ public class PgClienteRepository : IClienteRepository
 
     public async Task<Guid?> CreateCliente(Cliente cliente)
     {
-        var transaction = await this.dbContext.Database.BeginTransactionAsync();
         try
         {
             Log.Information("Creating cliente with ClienteId: {ClienteId}", cliente.ClienteId);
 
             var entry = await this.dbContext.Clientes.AddAsync(cliente);
             await this.dbContext.SaveChangesAsync();
-            await transaction.CommitAsync();
 
             Log.Information("Cliente created with Id: {Id}", entry.Entity.Id);
             return entry.Entity.Id;
         }
         catch (Exception e)
         {
-            await transaction.RollbackAsync();
             Log.Error(e, "Error creating cliente with ClienteId: {ClienteId}", cliente.ClienteId);
             return null;
         }
@@ -63,19 +60,16 @@ public class PgClienteRepository : IClienteRepository
 
     public async Task<bool> UpdateCliente(Cliente cliente)
     {
-        var transaction = await this.dbContext.Database.BeginTransactionAsync();
         try
         {
             this.dbContext.Clientes.Update(cliente);
             await this.dbContext.SaveChangesAsync();
-            await transaction.CommitAsync();
 
             Log.Information("Cliente with Id {Id} updated successfully", cliente.Id);
             return true;
         }
         catch (Exception e)
         {
-            await transaction.RollbackAsync();
             Log.Error(e, "Error updating cliente with Id {Id}", cliente.Id);
             return false;
         }
@@ -90,7 +84,7 @@ public class PgClienteRepository : IClienteRepository
             return false;
         }
 
-        cliente.Desactivar();
+        cliente.Eliminar();
         return await this.UpdateCliente(cliente);
     }
 }
