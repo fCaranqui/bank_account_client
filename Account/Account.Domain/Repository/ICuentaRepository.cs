@@ -2,25 +2,25 @@ namespace Account.Domain.Repository;
 
 public interface ICuentaRepository
 {
-    Task<Guid?> CreateCuenta(Cuenta cuenta);
+    Task<Guid?> CreateAccount(Cuenta cuenta);
 
-    Task<Cuenta?> GetCuentaById(Guid id);
+    Task<Cuenta?> GetAccountById(Guid id);
 
-    Task<Cuenta?> GetCuentaByNumeroCuenta(string numeroCuenta);
+    Task<Cuenta?> GetAccountByNumber(string numeroCuenta);
 
-    Task<bool> ExisteCuentaConNumeroCuenta(string numeroCuenta);
+    Task<bool> ExistsAccountWithNumber(string numeroCuenta);
 
-    Task<List<Cuenta>> GetCuentasByClienteId(string clienteId);
+    Task<List<Cuenta>> GetAccountsByClientId(string clienteId);
 
-    Task<List<Cuenta>> GetAllCuentas();
+    Task<List<Cuenta>> GetAllAccounts();
 
-    Task<bool> UpdateCuenta(Cuenta cuenta);
+    Task<bool> UpdateAccount(Cuenta cuenta);
 
-    Task<Movimiento?> RegistrarMovimiento(Guid cuentaId, TipoMovimiento tipoMovimiento, decimal valor);
+    Task<Movimiento?> RegisterMovement(Guid cuentaId, TipoMovimiento tipoMovimiento, decimal valor);
 
-    Task<Movimiento?> GetMovimientoById(Guid movimientoId);
+    Task<Movimiento?> GetMovementById(Guid movimientoId);
 
-    Task<List<Movimiento>> GetMovimientosByCuentaId(
+    Task<List<Movimiento>> GetMovementsByAccountId(
         Guid cuentaId,
         DateTime? desde = null,
         DateTime? hasta = null,

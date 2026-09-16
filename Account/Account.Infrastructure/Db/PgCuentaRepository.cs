@@ -14,7 +14,7 @@ public class PgCuentaRepository : ICuentaRepository
         this.dbContext = dbContext;
     }
 
-    public async Task<Guid?> CreateCuenta(Cuenta cuenta)
+    public async Task<Guid?> CreateAccount(Cuenta cuenta)
     {
         try
         {
@@ -33,32 +33,32 @@ public class PgCuentaRepository : ICuentaRepository
         }
     }
 
-    public async Task<Cuenta?> GetCuentaById(Guid id)
+    public async Task<Cuenta?> GetAccountById(Guid id)
     {
         return await this.dbContext.Cuentas.FirstOrDefaultAsync(c => c.Id == id && c.DeletedAt == null);
     }
 
-    public async Task<Cuenta?> GetCuentaByNumeroCuenta(string numeroCuenta)
+    public async Task<Cuenta?> GetAccountByNumber(string numeroCuenta)
     {
         return await this.dbContext.Cuentas.FirstOrDefaultAsync(c => c.NumeroCuenta == numeroCuenta && c.DeletedAt == null);
     }
 
-    public async Task<bool> ExisteCuentaConNumeroCuenta(string numeroCuenta)
+    public async Task<bool> ExistsAccountWithNumber(string numeroCuenta)
     {
         return await this.dbContext.Cuentas.AnyAsync(c => c.NumeroCuenta == numeroCuenta && c.DeletedAt == null);
     }
 
-    public async Task<List<Cuenta>> GetCuentasByClienteId(string clienteId)
+    public async Task<List<Cuenta>> GetAccountsByClientId(string clienteId)
     {
         return await this.dbContext.Cuentas.Where(c => c.ClienteId == clienteId && c.DeletedAt == null).ToListAsync();
     }
 
-    public async Task<List<Cuenta>> GetAllCuentas()
+    public async Task<List<Cuenta>> GetAllAccounts()
     {
         return await this.dbContext.Cuentas.Where(c => c.DeletedAt == null).ToListAsync();
     }
 
-    public async Task<bool> UpdateCuenta(Cuenta cuenta)
+    public async Task<bool> UpdateAccount(Cuenta cuenta)
     {
         try
         {
@@ -75,19 +75,18 @@ public class PgCuentaRepository : ICuentaRepository
         }
     }
 
-    public async Task<Movimiento?> RegistrarMovimiento(Guid cuentaId, TipoMovimiento tipoMovimiento, decimal valor)
+    public async Task<Movimiento?> RegisterMovement(Guid cuentaId, TipoMovimiento tipoMovimiento, decimal valor)
     {
         var cuenta = await this.dbContext.Cuentas.FirstOrDefaultAsync(c => c.Id == cuentaId);
         if (cuenta == null)
         {
-            Log.Warning("Cuenta with Id {Id} not found for RegistrarMovimiento", cuentaId);
+            Log.Warning("Cuenta with Id {Id} not found for RegisterMovement", cuentaId);
             return null;
         }
 
-        // Domain invariants (F2/F3) run here. SaldoNoDisponibleException and
-        // CuentaInactivaException must propagate uncaught — they are expected business-rule
-        // violations for the exception middleware to map, not infrastructure failures.
-        var movimiento = cuenta.RegistrarMovimiento(tipoMovimiento, valor);
+        // SaldoNoDisponibleException and CuentaInactivaException must propagate uncaught here —
+        // they are expected business-rule violations, not infrastructure failures.
+        var movimiento = cuenta.RegisterMovement(tipoMovimiento, valor);
 
         try
         {
@@ -104,12 +103,12 @@ public class PgCuentaRepository : ICuentaRepository
         }
     }
 
-    public async Task<Movimiento?> GetMovimientoById(Guid movimientoId)
+    public async Task<Movimiento?> GetMovementById(Guid movimientoId)
     {
         return await this.dbContext.Movimientos.FirstOrDefaultAsync(m => m.Id == movimientoId && m.DeletedAt == null);
     }
 
-    public async Task<List<Movimiento>> GetMovimientosByCuentaId(
+    public async Task<List<Movimiento>> GetMovementsByAccountId(
         Guid cuentaId,
         DateTime? desde = null,
         DateTime? hasta = null,
