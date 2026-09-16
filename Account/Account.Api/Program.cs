@@ -1,3 +1,4 @@
+using Account.Api.Middleware;
 using Account.Infrastructure.Db;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
@@ -22,6 +23,8 @@ builder.Services.AddDbContext<AccountDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("AccountDb")));
 
 var app = builder.Build();
+
+app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 app.UseSerilogRequestLogging();
 
