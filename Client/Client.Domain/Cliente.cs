@@ -43,4 +43,14 @@ public class Cliente : Persona
     public void Activate() => Estado = true;
 
     public void Delete() => this.DeletedAt = DateTime.UtcNow;
+
+    public void SetPasswordHash(string contrasenaHash)
+    {
+        if (string.IsNullOrWhiteSpace(contrasenaHash))
+        {
+            throw new ArgumentException("La contraseña es obligatoria.", nameof(contrasenaHash));
+        }
+
+        ContrasenaHash = contrasenaHash;
+    }
 }
