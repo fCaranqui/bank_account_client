@@ -38,27 +38,27 @@ public class PgClienteRepository : IClienteRepository
 
     public async Task<Cliente?> GetClienteById(Guid id)
     {
-        return await this.dbContext.Clientes.FirstOrDefaultAsync(c => c.Id == id);
+        return await this.dbContext.Clientes.FirstOrDefaultAsync(c => c.Id == id && c.DeletedAt == null);
     }
 
     public async Task<Cliente?> GetClienteByClienteId(string clienteId)
     {
-        return await this.dbContext.Clientes.FirstOrDefaultAsync(c => c.ClienteId == clienteId);
+        return await this.dbContext.Clientes.FirstOrDefaultAsync(c => c.ClienteId == clienteId && c.DeletedAt == null);
     }
 
     public async Task<bool> ExisteClienteConIdentificacion(string identificacion)
     {
-        return await this.dbContext.Clientes.AnyAsync(c => c.Identificacion == identificacion);
+        return await this.dbContext.Clientes.AnyAsync(c => c.Identificacion == identificacion && c.DeletedAt == null);
     }
 
     public async Task<bool> ExisteClienteConClienteId(string clienteId)
     {
-        return await this.dbContext.Clientes.AnyAsync(c => c.ClienteId == clienteId);
+        return await this.dbContext.Clientes.AnyAsync(c => c.ClienteId == clienteId && c.DeletedAt == null);
     }
 
     public async Task<List<Cliente>> GetAllClientes()
     {
-        return await this.dbContext.Clientes.ToListAsync();
+        return await this.dbContext.Clientes.Where(c => c.DeletedAt == null).ToListAsync();
     }
 
     public async Task<bool> UpdateCliente(Cliente cliente)

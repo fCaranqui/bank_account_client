@@ -41,5 +41,13 @@ public class ClienteConfiguration : IEntityTypeConfiguration<Cliente>
         builder.Property(c => c.ContrasenaHash)
             .HasMaxLength(500)
             .IsRequired();
+
+        builder.Property(c => c.CreatedAt)
+            .HasDefaultValueSql("NOW()")
+            .IsRequired();
+
+        builder.Property(c => c.UpdatedAt);
+
+        builder.Property(c => c.DeletedAt);
     }
 }

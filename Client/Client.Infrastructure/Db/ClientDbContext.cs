@@ -16,4 +16,22 @@ public class ClientDbContext : DbContext
     {
         modelBuilder.ApplyConfiguration(new ClienteConfiguration());
     }
+
+    public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+    {
+        var now = DateTime.UtcNow;
+        foreach (var entry in this.ChangeTracker.Entries())
+        {
+            if (entry.State == EntityState.Added)
+            {
+                entry.Property("CreatedAt").CurrentValue = now;
+            }
+            else if (entry.State == EntityState.Modified)
+            {
+                entry.Property("UpdatedAt").CurrentValue = now;
+            }
+        }
+
+        return base.SaveChangesAsync(cancellationToken);
+    }
 }
