@@ -51,4 +51,23 @@ public class Persona
         Direccion = direccion;
         Telefono = telefono;
     }
+
+    public void UpdateDetails(string nombre, Genero genero, int edad, string direccion, string telefono)
+    {
+        if (string.IsNullOrWhiteSpace(nombre))
+        {
+            throw new ArgumentException("El nombre es obligatorio.", nameof(nombre));
+        }
+
+        if (edad < 0 || edad > 120)
+        {
+            throw new ArgumentOutOfRangeException(nameof(edad), "La edad no es válida.");
+        }
+
+        Nombre = nombre;
+        Genero = genero;
+        Edad = edad;
+        Direccion = direccion;
+        Telefono = telefono;
+    }
 }
