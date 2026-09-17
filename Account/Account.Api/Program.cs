@@ -66,6 +66,7 @@ builder.Services.AddScoped<UpdateAccountUseCase>();
 builder.Services.AddScoped<RegisterMovementUseCase>();
 builder.Services.AddScoped<GetMovementByIdUseCase>();
 builder.Services.AddScoped<GetMovementsByAccountIdUseCase>();
+builder.Services.AddScoped<GenerateAccountStatementReportUseCase>();
 
 const string corsPolicy = "AccountCorsPolicy";
 var allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>() ?? [];
