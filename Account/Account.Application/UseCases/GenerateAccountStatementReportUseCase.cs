@@ -20,6 +20,9 @@ public class GenerateAccountStatementReportUseCase : IUseCase<GenerateAccountSta
             throw new ArgumentException("El identificador del cliente no puede estar vacío.");
         }
 
+        input.Desde = DateTime.SpecifyKind(input.Desde, DateTimeKind.Utc);
+        input.Hasta = DateTime.SpecifyKind(input.Hasta, DateTimeKind.Utc);
+
         if (input.Desde.Equals(default(DateTime)) || input.Hasta.Equals(default(DateTime)))
         {
             throw new ArgumentException("Las fechas 'desde' y 'hasta' no pueden ser nulas.");
