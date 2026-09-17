@@ -16,7 +16,5 @@ public class CreateClientDto
 
     public string Telefono { get; set; } = null!;
 
-    public string ClienteId { get; set; } = null!;
-
     public string Contrasena { get; set; } = null!;
 }

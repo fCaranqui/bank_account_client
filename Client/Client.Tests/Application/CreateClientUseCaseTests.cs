@@ -15,7 +15,6 @@ public class CreateClientUseCaseTests
         Identificacion = "1234567890",
         Direccion = "Calle 1",
         Telefono = "0999999999",
-        ClienteId = "cli-001",
         Contrasena = "SuperSecret123",
     };
 
@@ -28,7 +27,6 @@ public class CreateClientUseCaseTests
         var result = await useCase.Execute(ValidDto());
 
         Assert.NotEqual(Guid.Empty, result.Id);
-        Assert.Equal("cli-001", result.ClienteId);
 
         var stored = await repository.GetClientById(result.Id);
         Assert.NotNull(stored);
@@ -40,19 +38,9 @@ public class CreateClientUseCaseTests
     public async Task Execute_DuplicateIdentificacion_ThrowsDuplicateIdentificationException()
     {
         var repository = ClientRepositoryTestHelper.CreateRepository();
-        await ClientRepositoryTestHelper.SeedCliente(repository, "other-id", "1234567890");
+        await ClientRepositoryTestHelper.SeedCliente(repository, "1234567890");
         var useCase = new CreateClientUseCase(repository);
 
         await Assert.ThrowsAsync<DuplicateIdentificationException>(() => useCase.Execute(ValidDto()));
-    }
-
-    [Fact]
-    public async Task Execute_DuplicateClienteId_ThrowsDuplicateClientIdException()
-    {
-        var repository = ClientRepositoryTestHelper.CreateRepository();
-        await ClientRepositoryTestHelper.SeedCliente(repository, "cli-001", "other-identificacion");
-        var useCase = new CreateClientUseCase(repository);
-
-        await Assert.ThrowsAsync<DuplicateClientIdException>(() => useCase.Execute(ValidDto()));
     }
 }

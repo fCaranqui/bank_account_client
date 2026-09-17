@@ -15,7 +15,7 @@ public class GetClientByIdUseCaseTests
         var result = await useCase.Execute(cliente.Id);
 
         Assert.Equal(cliente.Id, result.Id);
-        Assert.Equal(cliente.ClienteId, result.ClienteId);
+        Assert.Equal(cliente.Identificacion, result.Identificacion);
     }
 
     [Fact]

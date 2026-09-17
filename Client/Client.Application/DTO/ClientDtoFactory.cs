@@ -15,7 +15,6 @@ public static class ClientDtoFactory
             Identificacion = cliente.Identificacion,
             Direccion = cliente.Direccion,
             Telefono = cliente.Telefono,
-            ClienteId = cliente.ClienteId,
             Estado = cliente.Estado,
             CreatedAt = cliente.CreatedAt,
             UpdatedAt = cliente.UpdatedAt,

@@ -15,7 +15,7 @@ public static class ClientRepositoryTestHelper
         return new PgClienteRepository(new ClientDbContext(options));
     }
 
-    public static async Task<Cliente> SeedCliente(PgClienteRepository repository, string clienteId = "cli-001", string identificacion = "1234567890")
+    public static async Task<Cliente> SeedCliente(PgClienteRepository repository, string identificacion = "1234567890")
     {
         var cliente = new Cliente(
             "Juan Perez",
@@ -24,7 +24,6 @@ public static class ClientRepositoryTestHelper
             identificacion,
             "Calle 1",
             "0999999999",
-            clienteId,
             "hashed-password");
 
         await repository.CreateClient(cliente);

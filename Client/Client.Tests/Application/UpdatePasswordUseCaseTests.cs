@@ -16,7 +16,6 @@ public class UpdatePasswordUseCaseTests
             "1234567890",
             "Calle 1",
             "0999999999",
-            "cli-001",
             BCrypt.Net.BCrypt.HashPassword(plainPassword));
 
         await repository.CreateClient(cliente);

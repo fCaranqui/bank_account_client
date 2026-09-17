@@ -20,8 +20,8 @@ public class GetAllClientsUseCaseTests
     public async Task Execute_MultipleClients_ReturnsAll()
     {
         var repository = ClientRepositoryTestHelper.CreateRepository();
-        await ClientRepositoryTestHelper.SeedCliente(repository, "cli-001", "1111111111");
-        await ClientRepositoryTestHelper.SeedCliente(repository, "cli-002", "2222222222");
+        await ClientRepositoryTestHelper.SeedCliente(repository, "1111111111");
+        await ClientRepositoryTestHelper.SeedCliente(repository, "2222222222");
         var useCase = new GetAllClientsUseCase(repository);
 
         var result = await useCase.Execute(Unit.Value);

@@ -18,8 +18,6 @@ public class ClientDto
 
     public string Telefono { get; set; } = null!;
 
-    public string ClienteId { get; set; } = null!;
-
     public bool Estado { get; set; }
 
     public DateTime CreatedAt { get; set; }

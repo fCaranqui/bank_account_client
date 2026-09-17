@@ -22,11 +22,6 @@ public class CreateClientUseCase : IUseCase<CreateClientDto, ClientDto>
             throw new DuplicateIdentificationException();
         }
 
-        if (await this.clienteRepository.ExistsClientWithClientId(input.ClienteId))
-        {
-            throw new DuplicateClientIdException();
-        }
-
         var contrasenaHash = BCrypt.Net.BCrypt.HashPassword(input.Contrasena);
 
         var cliente = new Cliente(
@@ -36,7 +31,6 @@ public class CreateClientUseCase : IUseCase<CreateClientDto, ClientDto>
             input.Identificacion,
             input.Direccion,
             input.Telefono,
-            input.ClienteId,
             contrasenaHash);
 
         await this.clienteRepository.CreateClient(cliente);

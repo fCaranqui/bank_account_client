@@ -6,11 +6,7 @@ public interface IClienteRepository
 
     Task<Cliente?> GetClientById(Guid id);
 
-    Task<Cliente?> GetClientByClientId(string clienteId);
-
     Task<bool> ExistsClientWithIdentification(string identificacion);
-
-    Task<bool> ExistsClientWithClientId(string clienteId);
 
     Task<List<Cliente>> GetAllClients();
 

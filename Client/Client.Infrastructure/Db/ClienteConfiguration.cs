@@ -32,12 +32,6 @@ public class ClienteConfiguration : IEntityTypeConfiguration<Cliente>
         builder.Property(c => c.Telefono)
             .HasMaxLength(20);
 
-        builder.Property(c => c.ClienteId)
-            .HasMaxLength(50)
-            .IsRequired();
-
-        builder.HasIndex(c => c.ClienteId).IsUnique();
-
         builder.Property(c => c.ContrasenaHash)
             .HasMaxLength(500)
             .IsRequired();

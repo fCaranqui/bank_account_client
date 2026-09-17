@@ -12,7 +12,6 @@ public class ClienteTests
             "1234567890",
             "Calle 1",
             "0999999999",
-            "cli-001",
             "hashed-password");
 
     [Fact]
@@ -20,7 +19,6 @@ public class ClienteTests
     {
         var cliente = CreateValidCliente();
 
-        Assert.Equal("cli-001", cliente.ClienteId);
         Assert.Equal("hashed-password", cliente.ContrasenaHash);
         Assert.True(cliente.Estado);
         Assert.Null(cliente.DeletedAt);
@@ -29,19 +27,10 @@ public class ClienteTests
     [Theory]
     [InlineData(null)]
     [InlineData("")]
-    public void Constructor_InvalidClienteId_ThrowsArgumentException(string? clienteId)
-    {
-        Assert.Throws<ArgumentException>(() =>
-            new Cliente("Juan Perez", Genero.Masculino, 30, "1234567890", "Calle 1", "0999999999", clienteId!, "hashed-password"));
-    }
-
-    [Theory]
-    [InlineData(null)]
-    [InlineData("")]
     public void Constructor_InvalidContrasenaHash_ThrowsArgumentException(string? contrasenaHash)
     {
         Assert.Throws<ArgumentException>(() =>
-            new Cliente("Juan Perez", Genero.Masculino, 30, "1234567890", "Calle 1", "0999999999", "cli-001", contrasenaHash!));
+            new Cliente("Juan Perez", Genero.Masculino, 30, "1234567890", "Calle 1", "0999999999", contrasenaHash!));
     }
 
     [Fact]
@@ -84,7 +73,6 @@ public class ClienteTests
         cliente.UpdateDetails("Juan Actualizado", Genero.Otro, 40, "Calle 2", "0988888888");
 
         Assert.Equal("Juan Actualizado", cliente.Nombre);
-        Assert.Equal("cli-001", cliente.ClienteId);
         Assert.Equal("hashed-password", cliente.ContrasenaHash);
         Assert.True(cliente.Estado);
     }
