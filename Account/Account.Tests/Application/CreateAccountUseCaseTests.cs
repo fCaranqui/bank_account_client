@@ -2,6 +2,7 @@ using Account.Application.DTO;
 using Account.Application.Exceptions;
 using Account.Application.UseCases;
 using Account.Domain;
+using Account.Domain.Repository;
 
 namespace Account.Tests.Application;
 
@@ -11,7 +12,7 @@ public class CreateAccountUseCaseTests
     public async Task Execute_ValidData_CreatesAndReturnsAccountDto()
     {
         var repository = TestDbContextFactory.CreateRepository();
-        var useCase = new CreateAccountUseCase(repository);
+        var useCase = new CreateAccountUseCase(repository, new StubClientReplicaRepository(true));
 
         var dto = new CreateAccountDto
         {
@@ -32,7 +33,7 @@ public class CreateAccountUseCaseTests
     public async Task Execute_DuplicateNumeroCuenta_ThrowsDuplicateAccountNumberException()
     {
         var repository = TestDbContextFactory.CreateRepository();
-        var useCase = new CreateAccountUseCase(repository);
+        var useCase = new CreateAccountUseCase(repository, new StubClientReplicaRepository(true));
         var dto = new CreateAccountDto
         {
             NumeroCuenta = "001-001",
@@ -51,5 +52,35 @@ public class CreateAccountUseCaseTests
         };
 
         await Assert.ThrowsAsync<DuplicateAccountNumberException>(() => useCase.Execute(duplicate));
+    }
+
+    [Fact]
+    public async Task Execute_ClientReplicaDoesNotExist_ThrowsClientNotFoundException()
+    {
+        var repository = TestDbContextFactory.CreateRepository();
+        var useCase = new CreateAccountUseCase(repository, new StubClientReplicaRepository(false));
+        var dto = new CreateAccountDto
+        {
+            NumeroCuenta = "001-002",
+            TipoCuenta = TipoCuenta.Ahorro,
+            SaldoInicial = 500m,
+            ClienteId = Guid.NewGuid(),
+        };
+
+        await Assert.ThrowsAsync<ClientNotFoundException>(() => useCase.Execute(dto));
+    }
+
+    private sealed class StubClientReplicaRepository : IClientReplicaRepository
+    {
+        private readonly bool exists;
+
+        public StubClientReplicaRepository(bool exists)
+        {
+            this.exists = exists;
+        }
+
+        public Task Upsert(Guid clientId, DateTime createdAt) => Task.CompletedTask;
+
+        public Task<bool> Exists(Guid clientId) => Task.FromResult(this.exists);
     }
 }

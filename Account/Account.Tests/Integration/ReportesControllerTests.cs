@@ -5,6 +5,8 @@ using System.Text.Json.Serialization;
 using Account.Api.Contracts;
 using Account.Application.DTO;
 using Account.Domain;
+using Account.Infrastructure.Db;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Account.Tests.Integration;
 
@@ -15,12 +17,21 @@ public class ReportesControllerTests
         Converters = { new JsonStringEnumConverter() },
     };
 
+    private static async Task SeedClientReplicaAsync(AccountApiFactory factory, Guid clientId)
+    {
+        using var scope = factory.Services.CreateScope();
+        var dbContext = scope.ServiceProvider.GetRequiredService<AccountDbContext>();
+        dbContext.ClientReplicas.Add(new ClientReplica { ClientId = clientId, CreatedAt = DateTime.UtcNow });
+        await dbContext.SaveChangesAsync();
+    }
+
     [Fact]
     public async Task GetStatement_ValidRange_ReturnsAccountsWithMovements()
     {
         using var factory = new AccountApiFactory();
         using var client = factory.CreateClient();
         var clienteId = Guid.NewGuid();
+        await SeedClientReplicaAsync(factory, clienteId);
         await client.PostAsJsonAsync("/cuentas", new CreateAccountDto
         {
             NumeroCuenta = "it-rep-1",

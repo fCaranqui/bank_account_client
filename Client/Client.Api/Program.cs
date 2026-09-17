@@ -2,9 +2,12 @@ using System.Reflection;
 using System.Text.Json.Serialization;
 using Client.Api.Contracts;
 using Client.Api.Middleware;
+using Client.Application.Common;
 using Client.Application.UseCases;
 using Client.Domain.Repository;
 using Client.Infrastructure.Db;
+using Client.Infrastructure.Events;
+using MassTransit;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi;
@@ -66,6 +69,35 @@ builder.Services.AddScoped<DeleteClientUseCase>();
 builder.Services.AddScoped<ActivateClientUseCase>();
 builder.Services.AddScoped<DeactivateClientUseCase>();
 builder.Services.AddScoped<UpdatePasswordUseCase>();
+
+if (!builder.Environment.IsEnvironment("Testing"))
+{
+    builder.Services.AddMassTransit(x =>
+    {
+        x.UsingRabbitMq((context, cfg) =>
+        {
+            cfg.Host(builder.Configuration["RabbitMq:Host"], "/", h =>
+            {
+                h.Username(builder.Configuration["RabbitMq:Username"]!);
+                h.Password(builder.Configuration["RabbitMq:Password"]!);
+            });
+
+            cfg.Message<Client.Application.Events.ClientCreatedEvent>(m => m.SetEntityName("client-created"));
+
+            // Client and Account each keep their own copy of ClientCreatedEvent in different
+            // namespaces (this repo's standing "duplicated, not shared" convention for message
+            // contracts). MassTransit's default envelope embeds the publisher's fully-qualified
+            // CLR type name and only routes to a consumer whose registered type matches exactly,
+            // so two structurally-identical-but-differently-named types never match by default and
+            // the message gets dead-lettered. Raw JSON with AnyMessageType deserializes by message
+            // shape against the receiving endpoint's registered consumer type instead of checking
+            // the publisher's type name, which is what makes the two copies interoperate.
+            cfg.UseRawJsonSerializer(RawSerializerOptions.AnyMessageType);
+        });
+    });
+
+    builder.Services.AddScoped<IEventPublisher, MassTransitEventPublisher>();
+}
 
 const string corsPolicy = "ClientCorsPolicy";
 var allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>() ?? [];

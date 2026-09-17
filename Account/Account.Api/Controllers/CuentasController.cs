@@ -36,10 +36,12 @@ public class CuentasController : ControllerBase
     /// <param name="dto">Datos de la cuenta a crear.</param>
     /// <response code="201">Cuenta creada correctamente.</response>
     /// <response code="400">Datos de la cuenta inválidos.</response>
+    /// <response code="404">No existe un cliente con el identificador indicado.</response>
     /// <response code="409">Ya existe una cuenta con el mismo número de cuenta.</response>
     [HttpPost]
     [ProducesResponseType(typeof(GatewayResponse<AccountDto>), StatusCodes.Status201Created)]
     [ProducesResponseType(typeof(GatewayResponse<object>), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(GatewayResponse<object>), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(GatewayResponse<object>), StatusCodes.Status409Conflict)]
     public async Task<IActionResult> Create([FromBody] CreateAccountDto dto)
     {

@@ -1,4 +1,5 @@
 using Account.Infrastructure.Db;
+using MassTransit;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
@@ -31,6 +32,16 @@ public class AccountApiFactory : WebApplicationFactory<Program>
             }
 
             services.AddDbContext<AccountDbContext>(options => options.UseInMemoryDatabase(this.databaseName));
+
+            // MassTransit's DI surface isn't safely removable/re-addable like the DbContext
+            // registration above, so instead of trying to swap it out, the real AddMassTransit
+            // call in Program.cs is skipped entirely for the Testing environment and the in-memory
+            // test harness is registered here instead, so the consumer still resolves without a
+            // real broker.
+            services.AddMassTransitTestHarness(x =>
+            {
+                x.AddConsumer<Account.Infrastructure.Events.ClientCreatedEventConsumer>();
+            });
         });
     }
 }

@@ -14,10 +14,13 @@ public class AccountDbContext : DbContext
 
     public DbSet<Movimiento> Movimientos => this.Set<Movimiento>();
 
+    public DbSet<ClientReplica> ClientReplicas => this.Set<ClientReplica>();
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyConfiguration(new CuentaConfiguration());
         modelBuilder.ApplyConfiguration(new MovimientoConfiguration());
+        modelBuilder.ApplyConfiguration(new ClientReplicaConfiguration());
     }
 
     public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)

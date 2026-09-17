@@ -9,10 +9,12 @@ namespace Client.Application.UseCases;
 public class CreateClientUseCase : IUseCase<CreateClientDto, ClientDto>
 {
     private readonly IClienteRepository clienteRepository;
+    private readonly IEventPublisher eventPublisher;
 
-    public CreateClientUseCase(IClienteRepository clienteRepository)
+    public CreateClientUseCase(IClienteRepository clienteRepository, IEventPublisher eventPublisher)
     {
         this.clienteRepository = clienteRepository;
+        this.eventPublisher = eventPublisher;
     }
 
     public async Task<ClientDto> Execute(CreateClientDto input)
@@ -34,6 +36,10 @@ public class CreateClientUseCase : IUseCase<CreateClientDto, ClientDto>
             contrasenaHash);
 
         await this.clienteRepository.CreateClient(cliente);
+
+        // Published right after the DB write with no outbox: a broker outage at this exact
+        // instant creates the client but loses the event. Accepted trade-off, not a bug.
+        await this.eventPublisher.PublishClientCreatedAsync(cliente.Id);
 
         return ClientDtoFactory.CreateFromEntity(cliente);
     }

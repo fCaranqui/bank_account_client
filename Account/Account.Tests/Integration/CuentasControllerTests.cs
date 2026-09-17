@@ -5,6 +5,8 @@ using System.Text.Json.Serialization;
 using Account.Api.Contracts;
 using Account.Application.DTO;
 using Account.Domain;
+using Account.Infrastructure.Db;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Account.Tests.Integration;
 
@@ -23,13 +25,23 @@ public class CuentasControllerTests
         ClienteId = Guid.NewGuid(),
     };
 
+    private static async Task SeedClientReplicaAsync(AccountApiFactory factory, Guid clientId)
+    {
+        using var scope = factory.Services.CreateScope();
+        var dbContext = scope.ServiceProvider.GetRequiredService<AccountDbContext>();
+        dbContext.ClientReplicas.Add(new ClientReplica { ClientId = clientId, CreatedAt = DateTime.UtcNow });
+        await dbContext.SaveChangesAsync();
+    }
+
     [Fact]
     public async Task Create_ValidData_Returns201WithCreatedAccount()
     {
         using var factory = new AccountApiFactory();
         using var client = factory.CreateClient();
+        var dto = ValidCreateDto("it-cta-1");
+        await SeedClientReplicaAsync(factory, dto.ClienteId);
 
-        var response = await client.PostAsJsonAsync("/cuentas", ValidCreateDto("it-cta-1"));
+        var response = await client.PostAsJsonAsync("/cuentas", dto);
 
         Assert.Equal(HttpStatusCode.Created, response.StatusCode);
         var body = await response.Content.ReadFromJsonAsync<GatewayResponse<AccountDto>>(JsonOptions);
@@ -43,7 +55,9 @@ public class CuentasControllerTests
     {
         using var factory = new AccountApiFactory();
         using var client = factory.CreateClient();
-        await client.PostAsJsonAsync("/cuentas", ValidCreateDto("it-cta-dup"));
+        var firstDto = ValidCreateDto("it-cta-dup");
+        await SeedClientReplicaAsync(factory, firstDto.ClienteId);
+        await client.PostAsJsonAsync("/cuentas", firstDto);
 
         var response = await client.PostAsJsonAsync("/cuentas", ValidCreateDto("it-cta-dup"));
 
@@ -53,11 +67,25 @@ public class CuentasControllerTests
     }
 
     [Fact]
+    public async Task Create_ClientReplicaMissing_Returns404()
+    {
+        using var factory = new AccountApiFactory();
+        using var client = factory.CreateClient();
+
+        var response = await client.PostAsJsonAsync("/cuentas", ValidCreateDto("it-cta-noclient"));
+
+        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+        var body = await response.Content.ReadFromJsonAsync<GatewayResponse<object>>(JsonOptions);
+        Assert.Equal("not_found", body!.Errors![0].Code);
+    }
+
+    [Fact]
     public async Task Create_InvalidData_Returns400()
     {
         using var factory = new AccountApiFactory();
         using var client = factory.CreateClient();
         var dto = ValidCreateDto(string.Empty);
+        await SeedClientReplicaAsync(factory, dto.ClienteId);
 
         var response = await client.PostAsJsonAsync("/cuentas", dto);
 
@@ -71,7 +99,9 @@ public class CuentasControllerTests
     {
         using var factory = new AccountApiFactory();
         using var client = factory.CreateClient();
-        var createResponse = await client.PostAsJsonAsync("/cuentas", ValidCreateDto("it-cta-getbyid"));
+        var dto = ValidCreateDto("it-cta-getbyid");
+        await SeedClientReplicaAsync(factory, dto.ClienteId);
+        var createResponse = await client.PostAsJsonAsync("/cuentas", dto);
         var created = await createResponse.Content.ReadFromJsonAsync<GatewayResponse<AccountDto>>(JsonOptions);
 
         var response = await client.GetAsync($"/cuentas/{created!.Data!.Id}");
@@ -99,7 +129,9 @@ public class CuentasControllerTests
     {
         using var factory = new AccountApiFactory();
         using var client = factory.CreateClient();
-        await client.PostAsJsonAsync("/cuentas", ValidCreateDto("it-cta-getall"));
+        var dto = ValidCreateDto("it-cta-getall");
+        await SeedClientReplicaAsync(factory, dto.ClienteId);
+        await client.PostAsJsonAsync("/cuentas", dto);
 
         var response = await client.GetAsync("/cuentas");
 
@@ -116,6 +148,7 @@ public class CuentasControllerTests
         var clienteId = Guid.NewGuid();
         var dto = ValidCreateDto("it-cta-byclient");
         dto.ClienteId = clienteId;
+        await SeedClientReplicaAsync(factory, clienteId);
         await client.PostAsJsonAsync("/cuentas", dto);
 
         var response = await client.GetAsync($"/cuentas/cliente/{clienteId}");
@@ -130,7 +163,9 @@ public class CuentasControllerTests
     {
         using var factory = new AccountApiFactory();
         using var client = factory.CreateClient();
-        var createResponse = await client.PostAsJsonAsync("/cuentas", ValidCreateDto("it-cta-update"));
+        var dto = ValidCreateDto("it-cta-update");
+        await SeedClientReplicaAsync(factory, dto.ClienteId);
+        var createResponse = await client.PostAsJsonAsync("/cuentas", dto);
         var created = await createResponse.Content.ReadFromJsonAsync<GatewayResponse<AccountDto>>(JsonOptions);
 
         var response = await client.PutAsJsonAsync($"/cuentas/{created!.Data!.Id}", new UpdateAccountDto { Estado = false });

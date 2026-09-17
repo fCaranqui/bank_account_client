@@ -9,10 +9,12 @@ namespace Account.Application.UseCases;
 public class CreateAccountUseCase : IUseCase<CreateAccountDto, AccountDto>
 {
     private readonly ICuentaRepository cuentaRepository;
+    private readonly IClientReplicaRepository clientReplicaRepository;
 
-    public CreateAccountUseCase(ICuentaRepository cuentaRepository)
+    public CreateAccountUseCase(ICuentaRepository cuentaRepository, IClientReplicaRepository clientReplicaRepository)
     {
         this.cuentaRepository = cuentaRepository;
+        this.clientReplicaRepository = clientReplicaRepository;
     }
 
     public async Task<AccountDto> Execute(CreateAccountDto input)
@@ -22,8 +24,13 @@ public class CreateAccountUseCase : IUseCase<CreateAccountDto, AccountDto>
             throw new DuplicateAccountNumberException();
         }
 
-        // ClienteId is not validated against an existing client here: this service has no local
-        // copy of client data to check against, so the check simply cannot be made yet.
+        // ClienteId is checked against the local ClientReplica table, populated asynchronously by
+        // the ClientCreatedEvent consumer rather than by a synchronous call to the Client service.
+        if (!await this.clientReplicaRepository.Exists(input.ClienteId))
+        {
+            throw new ClientNotFoundException();
+        }
+
         var cuenta = new Cuenta(input.NumeroCuenta, input.TipoCuenta, input.SaldoInicial, input.ClienteId);
 
         await this.cuentaRepository.CreateAccount(cuenta);

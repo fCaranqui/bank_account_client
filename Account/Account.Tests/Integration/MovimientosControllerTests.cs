@@ -5,6 +5,8 @@ using System.Text.Json.Serialization;
 using Account.Api.Contracts;
 using Account.Application.DTO;
 using Account.Domain;
+using Account.Infrastructure.Db;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Account.Tests.Integration;
 
@@ -15,17 +17,28 @@ public class MovimientosControllerTests
         Converters = { new JsonStringEnumConverter() },
     };
 
-    private static async Task<Guid> CreateAccountAsync(HttpClient client, string numeroCuenta, decimal saldoInicial = 100m)
+    private static async Task<Guid> CreateAccountAsync(AccountApiFactory factory, HttpClient client, string numeroCuenta, decimal saldoInicial = 100m)
     {
+        var clienteId = Guid.NewGuid();
+        await SeedClientReplicaAsync(factory, clienteId);
+
         var response = await client.PostAsJsonAsync("/cuentas", new CreateAccountDto
         {
             NumeroCuenta = numeroCuenta,
             TipoCuenta = TipoCuenta.Ahorro,
             SaldoInicial = saldoInicial,
-            ClienteId = Guid.NewGuid(),
+            ClienteId = clienteId,
         });
         var body = await response.Content.ReadFromJsonAsync<GatewayResponse<AccountDto>>(JsonOptions);
         return body!.Data!.Id;
+    }
+
+    private static async Task SeedClientReplicaAsync(AccountApiFactory factory, Guid clientId)
+    {
+        using var scope = factory.Services.CreateScope();
+        var dbContext = scope.ServiceProvider.GetRequiredService<AccountDbContext>();
+        dbContext.ClientReplicas.Add(new ClientReplica { ClientId = clientId, CreatedAt = DateTime.UtcNow });
+        await dbContext.SaveChangesAsync();
     }
 
     [Fact]
@@ -33,7 +46,7 @@ public class MovimientosControllerTests
     {
         using var factory = new AccountApiFactory();
         using var client = factory.CreateClient();
-        var cuentaId = await CreateAccountAsync(client, "it-mov-deposito");
+        var cuentaId = await CreateAccountAsync(factory, client, "it-mov-deposito");
 
         var response = await client.PostAsJsonAsync("/movimientos", new RegisterMovementDto
         {
@@ -53,7 +66,7 @@ public class MovimientosControllerTests
     {
         using var factory = new AccountApiFactory();
         using var client = factory.CreateClient();
-        var cuentaId = await CreateAccountAsync(client, "it-mov-sinsaldo", saldoInicial: 10m);
+        var cuentaId = await CreateAccountAsync(factory, client, "it-mov-sinsaldo", saldoInicial: 10m);
 
         var response = await client.PostAsJsonAsync("/movimientos", new RegisterMovementDto
         {
@@ -72,7 +85,7 @@ public class MovimientosControllerTests
     {
         using var factory = new AccountApiFactory();
         using var client = factory.CreateClient();
-        var cuentaId = await CreateAccountAsync(client, "it-mov-inactiva");
+        var cuentaId = await CreateAccountAsync(factory, client, "it-mov-inactiva");
         await client.PutAsJsonAsync($"/cuentas/{cuentaId}", new UpdateAccountDto { Estado = false });
 
         var response = await client.PostAsJsonAsync("/movimientos", new RegisterMovementDto
@@ -108,7 +121,7 @@ public class MovimientosControllerTests
     {
         using var factory = new AccountApiFactory();
         using var client = factory.CreateClient();
-        var cuentaId = await CreateAccountAsync(client, "it-mov-getbyid");
+        var cuentaId = await CreateAccountAsync(factory, client, "it-mov-getbyid");
         var createResponse = await client.PostAsJsonAsync("/movimientos", new RegisterMovementDto
         {
             CuentaId = cuentaId,
@@ -144,7 +157,7 @@ public class MovimientosControllerTests
         // must not silently produce an always-empty result.
         using var factory = new AccountApiFactory();
         using var client = factory.CreateClient();
-        var cuentaId = await CreateAccountAsync(client, "it-mov-paginacion");
+        var cuentaId = await CreateAccountAsync(factory, client, "it-mov-paginacion");
         await client.PostAsJsonAsync("/movimientos", new RegisterMovementDto { CuentaId = cuentaId, TipoMovimiento = TipoMovimiento.Deposito, Valor = 15m });
 
         var response = await client.GetAsync($"/movimientos/cuenta/{cuentaId}");
@@ -159,7 +172,7 @@ public class MovimientosControllerTests
     {
         using var factory = new AccountApiFactory();
         using var client = factory.CreateClient();
-        var cuentaId = await CreateAccountAsync(client, "it-mov-clamp");
+        var cuentaId = await CreateAccountAsync(factory, client, "it-mov-clamp");
         await client.PostAsJsonAsync("/movimientos", new RegisterMovementDto { CuentaId = cuentaId, TipoMovimiento = TipoMovimiento.Deposito, Valor = 15m });
 
         var response = await client.GetAsync($"/movimientos/cuenta/{cuentaId}?take=99999");

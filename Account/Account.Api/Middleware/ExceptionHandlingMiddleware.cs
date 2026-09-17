@@ -61,7 +61,7 @@ public class ExceptionHandlingMiddleware
 
     private static (HttpStatusCode StatusCode, string Code) MapException(Exception ex) => ex switch
     {
-        AccountNotFoundException or MovementNotFoundException => (HttpStatusCode.NotFound, "not_found"),
+        AccountNotFoundException or MovementNotFoundException or ClientNotFoundException => (HttpStatusCode.NotFound, "not_found"),
         DuplicateAccountNumberException => (HttpStatusCode.Conflict, "conflict"),
         SaldoNoDisponibleException or CuentaInactivaException => (HttpStatusCode.Conflict, "conflict"),
         ArgumentException => (HttpStatusCode.BadRequest, "invalid_argument"),

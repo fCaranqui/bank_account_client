@@ -5,6 +5,7 @@ using Account.Api.Middleware;
 using Account.Application.UseCases;
 using Account.Domain.Repository;
 using Account.Infrastructure.Db;
+using MassTransit;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi;
@@ -57,6 +58,41 @@ builder.Services.AddDbContext<AccountDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("AccountDb")));
 
 builder.Services.AddScoped<ICuentaRepository, PgCuentaRepository>();
+builder.Services.AddScoped<IClientReplicaRepository, ClientReplicaRepository>();
+
+if (!builder.Environment.IsEnvironment("Testing"))
+{
+    builder.Services.AddMassTransit(x =>
+    {
+        x.AddConsumer<Account.Infrastructure.Events.ClientCreatedEventConsumer>();
+
+        x.UsingRabbitMq((context, cfg) =>
+        {
+            cfg.Host(builder.Configuration["RabbitMq:Host"], "/", h =>
+            {
+                h.Username(builder.Configuration["RabbitMq:Username"]!);
+                h.Password(builder.Configuration["RabbitMq:Password"]!);
+            });
+
+            cfg.Message<Account.Application.Events.ClientCreatedEvent>(m => m.SetEntityName("client-created"));
+
+            // Client and Account each keep their own copy of ClientCreatedEvent in different
+            // namespaces (this repo's standing "duplicated, not shared" convention for message
+            // contracts). MassTransit's default envelope embeds the publisher's fully-qualified
+            // CLR type name and only routes to a consumer whose registered type matches exactly,
+            // so two structurally-identical-but-differently-named types never match by default and
+            // the message gets dead-lettered. Raw JSON with AnyMessageType deserializes by message
+            // shape against this endpoint's registered consumer type instead of checking the
+            // publisher's type name, which is what makes the two copies interoperate.
+            cfg.UseRawJsonSerializer(RawSerializerOptions.AnyMessageType);
+
+            cfg.ReceiveEndpoint("account-client-created", e =>
+            {
+                e.ConfigureConsumer<Account.Infrastructure.Events.ClientCreatedEventConsumer>(context);
+            });
+        });
+    });
+}
 
 builder.Services.AddScoped<CreateAccountUseCase>();
 builder.Services.AddScoped<GetAccountByIdUseCase>();

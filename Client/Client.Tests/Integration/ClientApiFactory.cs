@@ -1,4 +1,7 @@
+using Client.Application.Common;
 using Client.Infrastructure.Db;
+using Client.Infrastructure.Events;
+using MassTransit;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
@@ -31,6 +34,9 @@ public class ClientApiFactory : WebApplicationFactory<Program>
             }
 
             services.AddDbContext<ClientDbContext>(options => options.UseInMemoryDatabase(this.databaseName));
+
+            services.AddMassTransitTestHarness(x => { });
+            services.AddScoped<IEventPublisher, MassTransitEventPublisher>();
         });
     }
 }
