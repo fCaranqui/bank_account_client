@@ -7,7 +7,7 @@ public class MovimientoTests
     [Fact]
     public void RegisterMovement_Deposito_CreatesMovimientoWithPositiveValor()
     {
-        var cuenta = new Cuenta("001-001", TipoCuenta.Ahorro, 100m, "CLI-001");
+        var cuenta = new Cuenta("001-001", TipoCuenta.Ahorro, 100m, Guid.NewGuid());
 
         var movimiento = cuenta.RegisterMovement(TipoMovimiento.Deposito, 25m);
 
@@ -19,7 +19,7 @@ public class MovimientoTests
     [Fact]
     public void RegisterMovement_Retiro_CreatesMovimientoWithNegativeValor()
     {
-        var cuenta = new Cuenta("001-001", TipoCuenta.Ahorro, 100m, "CLI-001");
+        var cuenta = new Cuenta("001-001", TipoCuenta.Ahorro, 100m, Guid.NewGuid());
 
         var movimiento = cuenta.RegisterMovement(TipoMovimiento.Retiro, 25m);
 
@@ -30,7 +30,7 @@ public class MovimientoTests
     [Fact]
     public void RegisterMovement_AddsToCuentaMovimientosCollection()
     {
-        var cuenta = new Cuenta("001-001", TipoCuenta.Ahorro, 100m, "CLI-001");
+        var cuenta = new Cuenta("001-001", TipoCuenta.Ahorro, 100m, Guid.NewGuid());
 
         cuenta.RegisterMovement(TipoMovimiento.Deposito, 10m);
         cuenta.RegisterMovement(TipoMovimiento.Deposito, 20m);
@@ -41,7 +41,7 @@ public class MovimientoTests
     [Fact]
     public void RegisterMovement_SaldoReflectsRunningBalance()
     {
-        var cuenta = new Cuenta("001-001", TipoCuenta.Ahorro, 100m, "CLI-001");
+        var cuenta = new Cuenta("001-001", TipoCuenta.Ahorro, 100m, Guid.NewGuid());
 
         cuenta.RegisterMovement(TipoMovimiento.Deposito, 50m);
         var segundo = cuenta.RegisterMovement(TipoMovimiento.Retiro, 30m);

@@ -48,7 +48,7 @@ public class PgCuentaRepository : ICuentaRepository
         return await this.dbContext.Cuentas.AnyAsync(c => c.NumeroCuenta == numeroCuenta && c.DeletedAt == null);
     }
 
-    public async Task<List<Cuenta>> GetAccountsByClientId(string clienteId)
+    public async Task<List<Cuenta>> GetAccountsByClientId(Guid clienteId)
     {
         return await this.dbContext.Cuentas.Where(c => c.ClienteId == clienteId && c.DeletedAt == null).ToListAsync();
     }

@@ -10,7 +10,7 @@ public class GetAccountByIdUseCaseTests
     public async Task Execute_ExistingAccount_ReturnsAccountDto()
     {
         var repository = TestDbContextFactory.CreateRepository();
-        var cuenta = new Cuenta("001-001", TipoCuenta.Ahorro, 100m, "CLI-001");
+        var cuenta = new Cuenta("001-001", TipoCuenta.Ahorro, 100m, Guid.NewGuid());
         await repository.CreateAccount(cuenta);
         var useCase = new GetAccountByIdUseCase(repository);
 

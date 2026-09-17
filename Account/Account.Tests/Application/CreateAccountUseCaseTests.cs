@@ -18,7 +18,7 @@ public class CreateAccountUseCaseTests
             NumeroCuenta = "001-001",
             TipoCuenta = TipoCuenta.Ahorro,
             SaldoInicial = 500m,
-            ClienteId = "CLI-001",
+            ClienteId = Guid.NewGuid(),
         };
 
         var result = await useCase.Execute(dto);
@@ -38,7 +38,7 @@ public class CreateAccountUseCaseTests
             NumeroCuenta = "001-001",
             TipoCuenta = TipoCuenta.Ahorro,
             SaldoInicial = 500m,
-            ClienteId = "CLI-001",
+            ClienteId = Guid.NewGuid(),
         };
         await useCase.Execute(dto);
 
@@ -47,7 +47,7 @@ public class CreateAccountUseCaseTests
             NumeroCuenta = "001-001",
             TipoCuenta = TipoCuenta.Corriente,
             SaldoInicial = 100m,
-            ClienteId = "CLI-002",
+            ClienteId = Guid.NewGuid(),
         };
 
         await Assert.ThrowsAsync<DuplicateAccountNumberException>(() => useCase.Execute(duplicate));

@@ -10,8 +10,8 @@ public class GetAllAccountsUseCaseTests
     public async Task Execute_ReturnsAllAccounts()
     {
         var repository = TestDbContextFactory.CreateRepository();
-        await repository.CreateAccount(new Cuenta("001-001", TipoCuenta.Ahorro, 100m, "CLI-001"));
-        await repository.CreateAccount(new Cuenta("001-002", TipoCuenta.Corriente, 200m, "CLI-002"));
+        await repository.CreateAccount(new Cuenta("001-001", TipoCuenta.Ahorro, 100m, Guid.NewGuid()));
+        await repository.CreateAccount(new Cuenta("001-002", TipoCuenta.Corriente, 200m, Guid.NewGuid()));
         var useCase = new GetAllAccountsUseCase(repository);
 
         var result = await useCase.Execute(Unit.Value);

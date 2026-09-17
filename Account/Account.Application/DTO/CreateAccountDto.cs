@@ -10,5 +10,5 @@ public class CreateAccountDto
 
     public decimal SaldoInicial { get; set; }
 
-    public string ClienteId { get; set; } = null!;
+    public Guid ClienteId { get; set; }
 }

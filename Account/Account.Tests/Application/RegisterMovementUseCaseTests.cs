@@ -12,7 +12,7 @@ public class RegisterMovementUseCaseTests
     public async Task Execute_Deposito_IncreasesSaldoAndReturnsMovementDto()
     {
         var repository = TestDbContextFactory.CreateRepository();
-        var cuenta = new Cuenta("001-001", TipoCuenta.Ahorro, 100m, "CLI-001");
+        var cuenta = new Cuenta("001-001", TipoCuenta.Ahorro, 100m, Guid.NewGuid());
         await repository.CreateAccount(cuenta);
         var useCase = new RegisterMovementUseCase(repository);
 
@@ -36,7 +36,7 @@ public class RegisterMovementUseCaseTests
     public async Task Execute_RetiroMayorQueSaldo_PropagatesSaldoNoDisponibleExceptionUncaught()
     {
         var repository = TestDbContextFactory.CreateRepository();
-        var cuenta = new Cuenta("001-001", TipoCuenta.Ahorro, 100m, "CLI-001");
+        var cuenta = new Cuenta("001-001", TipoCuenta.Ahorro, 100m, Guid.NewGuid());
         await repository.CreateAccount(cuenta);
         var useCase = new RegisterMovementUseCase(repository);
 
@@ -48,7 +48,7 @@ public class RegisterMovementUseCaseTests
     public async Task Execute_CuentaDesactivada_PropagatesCuentaInactivaExceptionUncaught()
     {
         var repository = TestDbContextFactory.CreateRepository();
-        var cuenta = new Cuenta("001-001", TipoCuenta.Ahorro, 100m, "CLI-001");
+        var cuenta = new Cuenta("001-001", TipoCuenta.Ahorro, 100m, Guid.NewGuid());
         cuenta.Deactivate();
         await repository.CreateAccount(cuenta);
         var useCase = new RegisterMovementUseCase(repository);

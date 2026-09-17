@@ -16,7 +16,7 @@ public class AccountDto
 
     public bool Estado { get; set; }
 
-    public string ClienteId { get; set; } = null!;
+    public Guid ClienteId { get; set; }
 
     public DateTime CreatedAt { get; set; }
 

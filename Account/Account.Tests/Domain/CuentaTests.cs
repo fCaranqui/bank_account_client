@@ -8,7 +8,7 @@ public class CuentaTests
     [Fact]
     public void Constructor_ValidData_CreatesCuenta()
     {
-        var cuenta = new Cuenta("001-001", TipoCuenta.Ahorro, 100m, "CLI-001");
+        var cuenta = new Cuenta("001-001", TipoCuenta.Ahorro, 100m, Guid.NewGuid());
 
         Assert.Equal("001-001", cuenta.NumeroCuenta);
         Assert.Equal(TipoCuenta.Ahorro, cuenta.TipoCuenta);
@@ -20,25 +20,25 @@ public class CuentaTests
     [Fact]
     public void Constructor_EmptyNumeroCuenta_Throws()
     {
-        Assert.Throws<ArgumentException>(() => new Cuenta(string.Empty, TipoCuenta.Ahorro, 100m, "CLI-001"));
+        Assert.Throws<ArgumentException>(() => new Cuenta(string.Empty, TipoCuenta.Ahorro, 100m, Guid.NewGuid()));
     }
 
     [Fact]
     public void Constructor_NegativeSaldoInicial_Throws()
     {
-        Assert.Throws<ArgumentOutOfRangeException>(() => new Cuenta("001-001", TipoCuenta.Ahorro, -1m, "CLI-001"));
+        Assert.Throws<ArgumentOutOfRangeException>(() => new Cuenta("001-001", TipoCuenta.Ahorro, -1m, Guid.NewGuid()));
     }
 
     [Fact]
     public void Constructor_EmptyClienteId_Throws()
     {
-        Assert.Throws<ArgumentException>(() => new Cuenta("001-001", TipoCuenta.Ahorro, 100m, string.Empty));
+        Assert.Throws<ArgumentException>(() => new Cuenta("001-001", TipoCuenta.Ahorro, 100m, Guid.Empty));
     }
 
     [Fact]
     public void RegisterMovement_Deposito_IncreasesSaldoDisponible()
     {
-        var cuenta = new Cuenta("001-001", TipoCuenta.Ahorro, 100m, "CLI-001");
+        var cuenta = new Cuenta("001-001", TipoCuenta.Ahorro, 100m, Guid.NewGuid());
 
         var movimiento = cuenta.RegisterMovement(TipoMovimiento.Deposito, 50m);
 
@@ -50,7 +50,7 @@ public class CuentaTests
     [Fact]
     public void RegisterMovement_Retiro_DecreasesSaldoDisponible()
     {
-        var cuenta = new Cuenta("001-001", TipoCuenta.Ahorro, 100m, "CLI-001");
+        var cuenta = new Cuenta("001-001", TipoCuenta.Ahorro, 100m, Guid.NewGuid());
 
         var movimiento = cuenta.RegisterMovement(TipoMovimiento.Retiro, 40m);
 
@@ -61,7 +61,7 @@ public class CuentaTests
     [Fact]
     public void RegisterMovement_RetiroMayorQueSaldo_ThrowsSaldoNoDisponibleException()
     {
-        var cuenta = new Cuenta("001-001", TipoCuenta.Ahorro, 100m, "CLI-001");
+        var cuenta = new Cuenta("001-001", TipoCuenta.Ahorro, 100m, Guid.NewGuid());
 
         Assert.Throws<SaldoNoDisponibleException>(() => cuenta.RegisterMovement(TipoMovimiento.Retiro, 150m));
     }
@@ -69,7 +69,7 @@ public class CuentaTests
     [Fact]
     public void RegisterMovement_CuentaDesactivada_ThrowsCuentaInactivaException()
     {
-        var cuenta = new Cuenta("001-001", TipoCuenta.Ahorro, 100m, "CLI-001");
+        var cuenta = new Cuenta("001-001", TipoCuenta.Ahorro, 100m, Guid.NewGuid());
         cuenta.Deactivate();
 
         Assert.Throws<CuentaInactivaException>(() => cuenta.RegisterMovement(TipoMovimiento.Deposito, 10m));
@@ -78,7 +78,7 @@ public class CuentaTests
     [Fact]
     public void RegisterMovement_ValorCero_Throws()
     {
-        var cuenta = new Cuenta("001-001", TipoCuenta.Ahorro, 100m, "CLI-001");
+        var cuenta = new Cuenta("001-001", TipoCuenta.Ahorro, 100m, Guid.NewGuid());
 
         Assert.Throws<ArgumentException>(() => cuenta.RegisterMovement(TipoMovimiento.Deposito, 0m));
     }
@@ -86,7 +86,7 @@ public class CuentaTests
     [Fact]
     public void Deactivate_SetsEstadoFalse()
     {
-        var cuenta = new Cuenta("001-001", TipoCuenta.Ahorro, 100m, "CLI-001");
+        var cuenta = new Cuenta("001-001", TipoCuenta.Ahorro, 100m, Guid.NewGuid());
 
         cuenta.Deactivate();
 
@@ -96,7 +96,7 @@ public class CuentaTests
     [Fact]
     public void Activate_SetsEstadoTrue()
     {
-        var cuenta = new Cuenta("001-001", TipoCuenta.Ahorro, 100m, "CLI-001");
+        var cuenta = new Cuenta("001-001", TipoCuenta.Ahorro, 100m, Guid.NewGuid());
         cuenta.Deactivate();
 
         cuenta.Activate();

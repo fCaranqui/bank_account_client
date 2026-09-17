@@ -18,7 +18,7 @@ public class Cuenta
 
     public bool Estado { get; private set; }
 
-    public string ClienteId { get; private set; } = null!;
+    public Guid ClienteId { get; private set; }
 
     public DateTime CreatedAt { get; private set; }
 
@@ -32,7 +32,7 @@ public class Cuenta
     {
     }
 
-    public Cuenta(string numeroCuenta, TipoCuenta tipoCuenta, decimal saldoInicial, string clienteId)
+    public Cuenta(string numeroCuenta, TipoCuenta tipoCuenta, decimal saldoInicial, Guid clienteId)
     {
         if (string.IsNullOrWhiteSpace(numeroCuenta))
         {
@@ -44,7 +44,7 @@ public class Cuenta
             throw new ArgumentOutOfRangeException(nameof(saldoInicial), "El saldo inicial no puede ser negativo.");
         }
 
-        if (string.IsNullOrWhiteSpace(clienteId))
+        if (clienteId == Guid.Empty)
         {
             throw new ArgumentException("ClienteId es obligatorio.", nameof(clienteId));
         }

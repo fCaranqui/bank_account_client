@@ -10,7 +10,7 @@ public class GetMovementsByAccountIdUseCaseTests
     public async Task Execute_ReturnsMovementsForGivenAccount()
     {
         var repository = TestDbContextFactory.CreateRepository();
-        var cuenta = new Cuenta("001-001", TipoCuenta.Ahorro, 100m, "CLI-001");
+        var cuenta = new Cuenta("001-001", TipoCuenta.Ahorro, 100m, Guid.NewGuid());
         await repository.CreateAccount(cuenta);
         await repository.RegisterMovement(cuenta.Id, TipoMovimiento.Deposito, 10m);
         await repository.RegisterMovement(cuenta.Id, TipoMovimiento.Deposito, 20m);
@@ -25,7 +25,7 @@ public class GetMovementsByAccountIdUseCaseTests
     public async Task Execute_SkipTake_PaginatesResults()
     {
         var repository = TestDbContextFactory.CreateRepository();
-        var cuenta = new Cuenta("001-001", TipoCuenta.Ahorro, 100m, "CLI-001");
+        var cuenta = new Cuenta("001-001", TipoCuenta.Ahorro, 100m, Guid.NewGuid());
         await repository.CreateAccount(cuenta);
         await repository.RegisterMovement(cuenta.Id, TipoMovimiento.Deposito, 10m);
         await repository.RegisterMovement(cuenta.Id, TipoMovimiento.Deposito, 20m);
@@ -42,7 +42,7 @@ public class GetMovementsByAccountIdUseCaseTests
     public async Task Execute_NoMovementsForAccount_ReturnsEmptyList()
     {
         var repository = TestDbContextFactory.CreateRepository();
-        var cuenta = new Cuenta("001-001", TipoCuenta.Ahorro, 100m, "CLI-001");
+        var cuenta = new Cuenta("001-001", TipoCuenta.Ahorro, 100m, Guid.NewGuid());
         await repository.CreateAccount(cuenta);
         var useCase = new GetMovementsByAccountIdUseCase(repository);
 

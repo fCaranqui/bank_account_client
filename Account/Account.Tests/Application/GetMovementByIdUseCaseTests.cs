@@ -10,7 +10,7 @@ public class GetMovementByIdUseCaseTests
     public async Task Execute_ExistingMovement_ReturnsMovementDto()
     {
         var repository = TestDbContextFactory.CreateRepository();
-        var cuenta = new Cuenta("001-001", TipoCuenta.Ahorro, 100m, "CLI-001");
+        var cuenta = new Cuenta("001-001", TipoCuenta.Ahorro, 100m, Guid.NewGuid());
         await repository.CreateAccount(cuenta);
         var movimiento = await repository.RegisterMovement(cuenta.Id, TipoMovimiento.Deposito, 20m);
         var useCase = new GetMovementByIdUseCase(repository);

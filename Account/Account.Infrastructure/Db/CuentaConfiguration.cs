@@ -28,10 +28,6 @@ public class CuentaConfiguration : IEntityTypeConfiguration<Cuenta>
 
         builder.Property(c => c.SaldoDisponible).HasPrecision(18, 2);
 
-        builder.Property(c => c.ClienteId)
-            .HasMaxLength(50)
-            .IsRequired();
-
         builder.Property(c => c.CreatedAt)
             .HasDefaultValueSql("NOW()")
             .IsRequired();

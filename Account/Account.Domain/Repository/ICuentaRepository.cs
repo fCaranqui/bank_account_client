@@ -10,7 +10,7 @@ public interface ICuentaRepository
 
     Task<bool> ExistsAccountWithNumber(string numeroCuenta);
 
-    Task<List<Cuenta>> GetAccountsByClientId(string clienteId);
+    Task<List<Cuenta>> GetAccountsByClientId(Guid clienteId);
 
     Task<List<Cuenta>> GetAllAccounts();
 
